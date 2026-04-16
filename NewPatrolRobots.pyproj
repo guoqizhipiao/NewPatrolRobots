@@ -4,7 +4,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>67f4ce71-a010-4ac8-a7a0-bd5ad4a162e7</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>NewPatrolRobots.py</StartupFile>
+    <StartupFile>
+    </StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -22,10 +23,98 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="NewPatrolRobots.py" />
+    <InterpreterReference Include="CondaEnv|CondaEnv|PatrolRobotsenv" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="CondaEnv|CondaEnv|PatrolRobotsenv" />
+    <Folder Include="camera\" />
+    <Folder Include="FaceDetection\" />
+    <Folder Include="FaceDetection\models\" />
+    <Folder Include="FaceDetection\models\AgeGender_cls\" />
+    <Folder Include="FaceDetection\models\AgeGender_cls\weights\" />
+    <Folder Include="firealarm\" />
+    <Folder Include="LLM\" />
+    <Folder Include="LLM\knowledge\" />
+    <Folder Include="LLM\knowledge\chroma_db\" />
+    <Folder Include="LLM\knowledge\chroma_db\95c555bb-207d-417e-b524-cd08fc73909b\" />
+    <Folder Include="LLM\knowledge\chroma_db\c989e71c-fc48-42ce-b1fa-ef9b26003635\" />
+    <Folder Include="photomodule\" />
+    <Folder Include="photomodule\filereimage\" />
+    <Folder Include="SpeechToText\" />
+    <Folder Include="SpeechToText\models\" />
+    <Folder Include="SpeechToText\models\vosk\" />
+    <Folder Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\" />
+    <Folder Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\ivector\" />
+    <Folder Include="templates\" />
+    <Folder Include="TextToSpeech\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="FaceDetection\models\AgeGender_cls\args.yaml" />
+    <Content Include="FaceDetection\models\AgeGender_cls\confusion_matrix.png" />
+    <Content Include="FaceDetection\models\AgeGender_cls\confusion_matrix_normalized.png" />
+    <Content Include="FaceDetection\models\AgeGender_cls\results.csv" />
+    <Content Include="FaceDetection\models\AgeGender_cls\results.png" />
+    <Content Include="FaceDetection\models\AgeGender_cls\train_batch0.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\train_batch1.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\train_batch105000.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\train_batch105001.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\train_batch105002.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\train_batch2.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\val_batch0_labels.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\val_batch0_pred.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\val_batch1_labels.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\val_batch1_pred.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\val_batch2_labels.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\val_batch2_pred.jpg" />
+    <Content Include="FaceDetection\models\AgeGender_cls\weights\best.pt" />
+    <Content Include="FaceDetection\models\AgeGender_cls\weights\last.pt" />
+    <Content Include="FaceDetection\models\yolov8n-face.pt" />
+    <Content Include="firealarm\best26.pt" />
+    <Content Include="firealarm\init_image.jpg" />
+    <Content Include="LLM\knowledge\chroma_db\95c555bb-207d-417e-b524-cd08fc73909b\data_level0.bin" />
+    <Content Include="LLM\knowledge\chroma_db\95c555bb-207d-417e-b524-cd08fc73909b\header.bin" />
+    <Content Include="LLM\knowledge\chroma_db\95c555bb-207d-417e-b524-cd08fc73909b\length.bin" />
+    <Content Include="LLM\knowledge\chroma_db\95c555bb-207d-417e-b524-cd08fc73909b\link_lists.bin" />
+    <Content Include="LLM\knowledge\chroma_db\chroma.sqlite3" />
+    <Content Include="LLM\knowledge\embeddings.json" />
+    <Content Include="LLM\knowledge\泰山景区旅游路线.txt" />
+    <Content Include="LLM\knowledge\火灾应急预案.txt" />
+    <Content Include="LLM\knowledge\踩踏事故应急预案.txt" />
+    <Content Include="photomodule\filereimage\1.png" />
+    <Content Include="photomodule\filereimage\2.png" />
+    <Content Include="photomodule\filereimage\3.png" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\disambig_tid.int" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\final.mdl" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\Gr.fst" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\HCLr.fst" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\ivector\final.dubm" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\ivector\final.ie" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\ivector\final.mat" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\ivector\global_cmvn.stats" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\ivector\online_cmvn.conf" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\ivector\splice.conf" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\mfcc.conf" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\README" />
+    <Content Include="SpeechToText\models\vosk\vosk-model-small-cn-0.3\word_boundary.int" />
+    <Content Include="templates\index.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="app.py" />
+    <Compile Include="camera\camera2.py" />
+    <Compile Include="camera\__init__.py" />
+    <Compile Include="FaceDetection\AgeGenderPredict.py" />
+    <Compile Include="FaceDetection\__init__.py" />
+    <Compile Include="firealarm\firemain4.py" />
+    <Compile Include="firealarm\__init__.py" />
+    <Compile Include="LLM\CheckStartOllama.py" />
+    <Compile Include="LLM\DeepSeek.py" />
+    <Compile Include="LLM\__init__.py" />
+    <Compile Include="photomodule\framehandle.py" />
+    <Compile Include="photomodule\photomain2.py" />
+    <Compile Include="Robot.py" />
+    <Compile Include="SpeechToText\SpeechToText.py" />
+    <Compile Include="SpeechToText\__init__.py" />
+    <Compile Include="TextToSpeech\TextToSpeech_v6.py" />
+    <Compile Include="TextToSpeech\__init__.py" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in

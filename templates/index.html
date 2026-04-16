@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能导游助手</title>
+    <style>
+        /* 全局初始化：清除默认边距，统一盒子模型 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        /* 页面占满整个屏幕，不出现滚动条 */
+        body, html {
+            height: 100%;
+            overflow: hidden;
+        }
+
+
+        /* ==================== 顶部三个 tab 切换栏 ==================== */
+        .top-tabs {
+            display: flex;
+            height: 60px;
+            border-bottom: 2px solid #000;
+        }
+
+        /* 单个 tab 样式：平分宽度、居中、粗体 */
+        .tab {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            border-right: 2px solid #000;
+            cursor: pointer;
+            background: #f0f0f0;
+        }
+        .tab:last-child {
+            border-right: none;
+        }
+        /* 选中的 tab 变白 */
+        .tab.active {
+            background: #fff;
+        }
+
+        /* ==================== 页面内容区域 ==================== */
+        /* 默认隐藏所有页面 */
+        .page {
+            display: none;
+            height: calc(100vh - 60px);
+            padding: 20px;
+        }
+        /* 只有加 active 才显示 */
+        .page.active {
+            display: block;
+        }
+
+        /* ==================== 第0页：设置页样式 ==================== */
+        .settings-title {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* 火灾识别那一行的布局 */
+        .toggle-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            border: 2px solid #000;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+
+        /* 火灾识别开关样式（就是你之前问的 fireToggle） */
+        .toggle-switch {
+            width: 50px;
+            height: 28px;
+            border: 2px solid #000;
+            border-radius: 14px;
+            position: relative;
+            background: white;
+        }
+        .toggle-switch::after {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: #000;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.2s;
+        }
+        /* 开关打开时小圆点右移 */
+        .toggle-switch.active::after {
+            left: 24px;
+        }
+
+        /* 视频显示框 */
+        .video-fire {
+            border: 2px solid #000;
+            height: 380px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #666;
+        }
+        /* 全屏报警弹窗样式*/
+        #alarm-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(255, 0, 0, 0.85);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+        }
+        
+        /* 警报文字动画 */
+        #alarm-overlay h1 { 
+            font-size: 5rem; 
+            margin: 0; 
+            animation: blink 1s infinite; 
+            }
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        /* 关闭按钮 */
+        #alarm-overlay .close-btn {
+            background-color: white;
+            color: #ff4d4d;
+            border: 3px solid white;
+            padding: 15px 40px;
+            font-size: 1.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50px;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        #alarm-overlay .close-btn:hover {
+            background-color: #ffebeb;
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        #alarm-overlay .close-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* ==================== 第1页：聊天界面样式 ==================== */
+        .chat-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 2px solid #000;
+            border-radius: 12px;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 聊天顶部蓝色标题栏 */
+        .chat-header {
+            background: #1a73e8;
+            color: white;
+            padding: 16px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* 聊天内容区域，可滚动 */
+        .chat-area {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+
+        /* 消息气泡通用样式 */
+        .msg {
+            margin: 10px 0;
+            padding: 12px 16px;
+            border-radius: 12px;
+            max-width: 70%;
+        }
+        /* 用户消息：浅蓝色，靠右 */
+        .msg.user {
+            background: #d3eafd;
+            margin-left: auto;
+        }
+        /* 机器人消息：白色，靠左 */
+        .msg.bot {
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+
+        /* 底部输入框栏 */
+        .chat-input {
+            display: flex;
+            padding: 12px;
+            gap: 10px;
+            background: white;
+            border-top: 1px solid #ccc;
+        }
+        .chat-input input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 2px solid #ccc;
+            border-radius: 24px;
+            font-size: 16px;
+        }
+        .chat-input button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 24px;
+            background: #1a73e8;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* ==================== 第2页：拍照页面样式 ==================== */
+        .camera-layout {
+            display: flex;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* 左侧滤镜列表 */
+        .filter-list {
+            width: 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .filter-item {
+            height: 70px;
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            background: white;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        /* 滤镜选中样式 */
+        .filter-item.active {
+            background: #d3eafd;
+        }
+
+        /* 右侧相机预览区 */
+        .camera-preview {
+            flex: 1;
+            border: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            font-size: 24px;
+            position: relative;
+        }
+
+        /* 圆形拍照按钮 */
+        .camera-button {
+            width: 80px;
+            height: 80px;
+            border: 2px solid #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            background: white;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+        /* 拍照按钮按下效果 */
+        .camera-button:active {
+            transform: scale(0.95);
+            background: #f0f0f0;
+        }
+
+        /* 拍照成功提示 */
+        .camera-tip {
+            position: absolute;
+            top: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 18px;
+            display: none;
+        }
+
+        /* 倒计时样式 */
+        .countdown {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff4444;
+            display: none;
+        }
+
+        /* ==================== 录音提示弹窗（备用样式） ==================== */
+        .record-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            gap: 20px;
+            font-size: 18px;
+        }
+        .record-toast .cancel-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- 顶部标签栏：三个切换按钮 -->
+<div class="top-tabs">
+    <!-- 标签1，点击切换到第0页 -->
+    <div class="tab" onclick="switchPage(0)"><i class="fa fa-bars" style="font-size: 22px;"></i></div>
+    <!-- 标签2：默认选中 点击切换到第1页 → 聊天助手 -->
+    <div class="tab active" onclick="switchPage(1)">聊天助手</div>
+    <!-- 标签3：点击切换到第2页 → 拍照 -->
+    <div class="tab" onclick="switchPage(2)">拍照</div>
+</div>
+
+<!-- 报警弹窗 DOM -->
+<div id="alarm-overlay">
+    <h1>⚠️ 火灾警报 ⚠️</h1>
+    <p>检测到火焰，请立即处理！</p>
+    <button class="close-btn" onclick="closeAlarmOverlay()">关闭</button>
+</div>
+
+<!-- ==================== 第0页：设置页面 ==================== -->
+<div class="page active" id="page0">
+    <div class="settings-title">设置</div>
+
+    <!-- 火灾识别开关  -->
+    <div class="toggle-item">
+        火灾识别
+        <div class="toggle-switch" id="fireToggle"></div> <!-- 开关在这里！ -->
+    </div>
+
+    <div class="video-fire">
+        <img id ="videoFire" src="" data-src="/video_fire" alt="等待视频流..." style="max-width: 100%; max-height: 100%;">
+    </div>
+</div>
+
+<!-- ==================== 第1页：聊天助手页面 ==================== -->
+<div class="page" id="page1">
+    <div class="chat-container">
+        <div class="chat-header">景区安防向导机器人</div>
+
+        <!-- 聊天消息展示区 -->
+        <div class="chat-area" id="chatArea">
+            <div class="msg bot">您好！我是您的AI助手~</div>
+        </div>
+
+        <!-- 聊天输入框区域 -->
+        <div class="chat-input">
+            <button id="voiceBtn">语音</button>
+            <input id="chatInput" placeholder="请输入问题...">
+            <button id="sendBtn">发送</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== 第2页：拍照页面 ==================== -->
+<div class="page" id="page2">
+    <div class="camera-layout">
+        <!-- 滤镜列表 -->
+        <div class="filter-list">
+            <div class="filter-item" data-filter-id="1">滤镜1</div>
+            <div class="filter-item" data-filter-id="2">滤镜2</div>
+            <div class="filter-item" data-filter-id="3">滤镜3</div>
+        </div>
+
+        <!-- 相机预览区 -->
+        <div class="camera-preview">
+            <div class="camera-tip" id="cameraTip">📸 拍照成功！</div>
+            <div>视频区域</div>
+            <img id="VideoPhoto" data-src="/video_photo" src="" alt="等待视频流..." style="max-width: 100%; max-height: 100%;">
+            <div class="camera-button" id="cameraBtn">拍照</div>
+            <div class="countdown" id="countdown"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== 页面/标签页切换功能 ====================
+    // 接收一个索引值 index，用于切换对应页面和标签
+    
+
+
+    function switchPage(index) {
+        // 1. 找到所有 .page 页面，遍历移除 active 类（隐藏所有页面）
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        // 2. 找到所有 .tab 标签按钮，遍历移除 active 类（取消所有标签高亮）
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+
+        // 3. 根据传入的 index，找到对应页面并添加 active 类（显示当前页面）
+        document.getElementById('page' + index).classList.add('active');
+        // 4. 根据传入的 index，找到对应标签并添加 active 类（高亮当前标签）
+        document.querySelectorAll('.tab')[index].classList.add('active');
+
+        if (index == 2) {
+            const img = document.getElementById('VideoPhoto');
+            if (img){
+                if(!img.scr){
+                    img.src = img.dataset.src;
+                    if (!isPhoto){
+                        isPhoto = true;
+                        StartPhoto();
+                    }
+                }
+            }
+        }else{
+            const img = document.getElementById('VideoPhoto');
+            if (img){
+                img.src = "";
+            }
+        }
+
+        if (index == 0) {
+            const img = document.getElementById('videoFire');
+            if (img){
+                img.src = img.dataset.src;
+            }
+        }else{
+            const img = document.getElementById('videoFire');
+            if (img){
+                if(!img.scr){
+                    img.src = "";
+                }
+            }
+        }
+
+
+    }
+
+
+    window.onload = function() {
+        switchPage(1);
+    };
+
+
+    // ==================== 火焰按钮点击切换样式 ==================== 用于火灾检测
+    // 获取火焰开关按钮元素
+    const fireToggle = document.getElementById('fireToggle');
+    // 缓冲时间
+    let lastClickTime = 0;
+    const DELAY_MS = 2000
+
+    // 获取报警覆盖层
+    const overlay = document.getElementById('alarm-overlay');
+
+    // 点击火焰按钮时，切换 active 样式（点击亮、再点击灭）
+    fireToggle.addEventListener('click', async () => {
+        const now = Date.now();
+        const timeDiff = now - lastClickTime;
+        if (timeDiff < DELAY_MS) return;
+        lastClickTime = now;
+
+        fireToggle.classList.toggle('active');
+        // 点击火焰按钮时，启动/停止火灾识别
+        if(fireToggle.classList.contains('active')) {
+            // 如果包含 'active' 类，则启动报警
+            startFireAlarm();
+            FireStatusStream();
+        } else {
+            // 如果不包含 'active' 类（即再次点击被移除），则停止报警
+            stopFireAlarm();
+            closeAlarmOverlay();
+        }
+    });
+
+    //启动火灾识别
+    async function startFireAlarm() {
+        try {
+            const response = await fetch('/start_fire_alarm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+
+    // 停止火灾识别
+    async function stopFireAlarm() {
+        try {
+            const response = await fetch('/stop_fire_alarm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+    
+    // 建立 SSE 连接
+    function FireStatusStream() {
+        const eventSource = new EventSource('/fire_status_stream');
+
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log("收到状态更新:", data.status);
+
+            if (data.status === 'fire') {
+                overlay.style.display = 'flex';
+            } else if (data.status === 'no_fire') {
+                overlay.style.display = 'none';
+            }
+        };
+
+        eventSource.onerror = function(err) {
+            console.error("SSE 连接错误", err);
+            eventSource.close();
+        };
+    }
+
+    function closeAlarmOverlay() {
+        overlay.style.display = 'none';
+        console.log("用户手动关闭了警报");
+    }
+
+    // ==================== 聊天界面元素获取 ====================
+    // 获取聊天消息展示区域
+    const _chatArea = document.getElementById('chatArea');
+    // 获取聊天输入框
+    const _chatInput = document.getElementById('chatInput');
+    // 获取发送消息按钮
+    const _sendBtn = document.getElementById('sendBtn');
+    // 获取语音输入按钮
+    const _voiceBtn = document.getElementById('voiceBtn');
+
+    // 发送消息函数（异步函数，因为要请求后端接口）
+    async function sendMessage() {
+        // 1. 获取输入框内容，并去掉首尾空格
+        const text = _chatInput.value.trim();
+
+        // 2. 如果输入框是空的，直接退出，不发送
+        if (!text) return;
+
+        // ====================== 展示【用户消息】到聊天框 ======================
+        // 创建一个div，用来放用户发的消息
+        const userMsg = document.createElement('div');
+        userMsg.className = 'msg user';  // 设置样式类：用户消息
+        userMsg.textContent = text;      // 把输入的文字放进去
+        _chatArea.appendChild(userMsg);  // 添加到聊天区域显示
+
+        _chatInput.value = '';           // 清空输入框
+        _chatArea.scrollTop = _chatArea.scrollHeight; // 滚动到底部，显示最新消息
+
+        // ====================== 开始请求AI回复 ======================
+        try {
+            // 先显示“正在思考中...”的加载提示
+            const loadingMsg = document.createElement('div');
+            loadingMsg.className = 'msg bot';
+            loadingMsg.textContent = '🤖 正在思考中...';
+            loadingMsg.id = 'loadingMsg'; // 给个id，方便后面删掉
+            _chatArea.appendChild(loadingMsg);
+            _chatArea.scrollTop = _chatArea.scrollHeight;
+
+            // ====================== 第一步：把用户消息发给后端 /detect_write ======================
+            await fetch('/detect_write', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })  // 把用户输入的文字传给后端
+            });
+
+            // ====================== 第二步：获取AI的回答 /talk_to_robot ======================
+            const talkRes = await fetch('/talk_to_robot');
+            const talkData = await talkRes.json(); // 转成JSON格式
+
+            // 移除加载中的提示文字
+            document.getElementById('loadingMsg').remove();
+
+            // ====================== 展示AI的回答 ======================
+            const botMsg = document.createElement('div');
+            botMsg.className = 'msg bot';
+
+            // 拿到AI回答内容，如果没有就显示默认提示
+            let answer = talkData.answer_part || '抱歉，我暂时无法回答~';
+
+            // 关键：过滤掉AI思考过程 ...，只保留最终回答
+            answer = answer.replace(/[\s\S]*<\/think>/g, '').trim();
+
+            botMsg.textContent = answer; // 把回答放进消息框
+            _chatArea.appendChild(botMsg);
+            _chatArea.scrollTop = _chatArea.scrollHeight;
+
+            // ====================== 第三步：通知后端已读取答案 /read_the_answer ======================
+            await fetch('/read_the_answer', { method: 'POST' });
+
+            //播放AI的回答
+            speakText(answer);
+
+        } catch (error) {
+            // ====================== 网络错误/服务挂了的处理 ======================
+            console.error('Error:', error); // 控制台打印错误
+
+            // 如果加载提示还在，就删掉
+            if (document.getElementById('loadingMsg')) {
+                document.getElementById('loadingMsg').remove();
+            }
+
+            // 显示错误提示
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'msg bot';
+            errorMsg.textContent = '😥 服务连接失败，请重试';
+            _chatArea.appendChild(errorMsg);
+        }
+    }
+    function speakText(text) {
+        if (!text) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        window.speechSynthesis.speak(utterance);
+    }
+
+    // 点击【发送按钮】触发发消息
+    _sendBtn.addEventListener('click', sendMessage);
+
+    // 按【回车键】也能发消息
+    _chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+
+    // ==========================
+    // 新增【语音按钮功能】录音 → 转文字 → 自动发送
+    // ==========================
+    let isRecording = false; // 标记：是否正在录音（防止重复点）
+
+    // 点击【语音】按钮
+    _voiceBtn.addEventListener('click', async () => {
+        if (isRecording) return; // 如果正在录音，点了也没用（防重复）
+        isRecording = true;     // 标记开始录音
+
+        // ====================== 1. 创建一个居中的录音弹窗 🎤
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #333;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            z-index: 9999;
+            display: flex;
+            gap: 20px;
+            font-size: 18px;
+        `;
+        // 弹窗内容：显示“正在录音” + 红色取消按钮
+        toast.innerHTML = `
+            <span>🎤 正在录音...</span>
+            <button id="cancelBtn" style="background:#ff4444; color:white; border:none; padding:8px 16px; border-radius:8px; cursor:pointer;">取消</button>
+        `;
+        document.body.appendChild(toast); // 把弹窗加到页面上
+
+        let canceled = false; // 标记：用户是否点了取消
+
+        // ====================== 2. 点【取消按钮】
+        document.getElementById("cancelBtn").onclick = async () => {
+            canceled = true;               // 标记已取消
+            await fetch('/cancel_voice', { method: 'POST' }); // 通知后端取消录音
+            toast.remove();               // 关掉弹窗
+            isRecording = false;          // 重置录音状态
+        };
+
+        // ====================== 3. 开始录音，请求后端接口 /detect_speech（语音转文字）
+        try {
+            const res = await fetch('/detect_speech', { method: 'POST' });
+            const data = await res.json(); // 获取后端返回的文字结果
+
+            // 如果没取消，并且识别出了文字
+            if (!canceled && data.text) {
+                _chatInput.value = data.text; // 把文字填到输入框
+                sendMessage();                // 自动发送消息！
+            }
+        } catch (e) {
+            console.log("已取消"); // 出错一般是用户手动取消了
+        }
+
+        // ====================== 4. 录音结束，清理弹窗
+        if (!canceled) {
+            toast.remove();
+        }
+        isRecording = false; // 重置录音状态
+    });
+
+
+
+    // ==========================
+    // 新增：拍照页面交互逻辑
+    // ==========================
+    // 获取拍照相关元素
+    const cameraBtn = document.getElementById('cameraBtn');
+    const cameraTip = document.getElementById('cameraTip');
+    const countdown = document.getElementById('countdown');
+
+    const filterItems = document.querySelectorAll('.filter-item');
+
+    let last_filter = null;
+    // 状态变量
+    let isPhoto = false;
+
+    // 开始拍照
+    async function StartPhoto() {
+        try {
+                const response = await fetch ('/start_photo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    // 停止拍照
+    async function StopPhoto() {
+        try {
+                const response = await fetch ('/stop_photo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // 1. 滤镜点击交互：点哪个哪个高亮
+    filterItems.forEach(item => {
+        item.addEventListener('click', () => {
+            console.log("点击了:", item.innerText);
+            // 先移除所有滤镜的active
+            filterItems.forEach(f => f.classList.remove('active'));
+            // 给当前点击的加active（高亮）
+            item.classList.add('active');
+
+            const filterId = item.dataset.filterId;
+            if (last_filter != filterId){
+                UpdateFilter(filterId);
+                last_filter = filterId;
+            }else{
+                UpdateFilter(0);
+            }
+
+        });
+        });
+
+    async function UpdateFilter(filterId){
+        const response = await fetch('/update-filter', { // 这里替换成你真实的后台接口地址
+        method: 'POST', // 使用 POST 方法
+        headers: {
+            'Content-Type': 'application/json' // 告诉服务器我们发送的是 JSON 数据
+        },
+        body: JSON.stringify({ // 将数据对象转换为 JSON 字符串
+            filterId: filterId
+            })
+        })
+        .catch(error => {
+            // 处理请求或解析过程中的错误
+            console.error('发送滤镜信息失败:', error);
+            // 例如：可以在这里给用户一个“网络错误”的提示
+        });
+    }
+
+    // 2. 拍照按钮点击交互：倒计时+提示
+    cameraBtn.addEventListener('click', () => {
+        // 防止重复点击
+        if (countdown.style.display === 'block') return;
+
+        // 显示倒计时
+        countdown.style.display = 'block';
+        let num = 3;
+        countdown.textContent = num;
+
+        // 倒计时定时器
+        const timer = setInterval(() => {
+            num--;
+            if (num <= 0) {
+                clearInterval(timer);
+                countdown.style.display = 'none';
+                // 显示拍照成功提示
+                cameraTip.style.display = 'block';
+                // 2秒后自动隐藏提示
+                setTimeout(() => {
+                    cameraTip.style.display = 'none';
+                }, 2000);
+            } else {
+                countdown.textContent = num;
+            }
+        }, 1000);
+    }
+    );
+
+    async function downloadImage() {
+        const link = document.createElement('a');
+        time = new Date().getTime();
+        link.href = targetImageSrc;
+        link.download = time + 'image.jpg'; // 指定下载后的文件名
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+</script>
+
+</body>
+</html>
