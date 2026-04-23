@@ -15,29 +15,34 @@ from photomodule.framehandle import frame_handle
 
 class potho():
     def __init__(self, frame_queue, start_event, stop_event, filere, name, shape):
+        # 共享内存
         self.name = name
+        # 图像形状
         self.shape = shape
+        # 创建共享内存对象
         self.shm = shared_memory.SharedMemory(name=self.name)
+        # 创建numpy数组
         self.frame = np.ndarray(self.shape, dtype=np.uint8, buffer=self.shm.buf)
 
         self.frame_queue = frame_queue
         self.start_event = start_event
         self.stop_event = stop_event
-
+        # 加载滤镜
         self.filere = filere
         curr_dir = os.path.dirname(__file__)
         self.filere_dir = os.path.join(curr_dir, "filereimage")
         self.filere_images = []
         self.load_filere()
-
+        # 图像转换类
         self.handle = frame_handle()
+        # 滤镜位置大小
         self.position = (0,0)
         self.size = 1
-
+        #启动循环
         self.run()
 
-
     def load_filere(self):
+        # 加载滤镜文件
         valid_extensions = (".png")
         for filename in os.listdir(self.filere_dir):
             if filename.lower().endswith(valid_extensions):
@@ -55,18 +60,19 @@ class potho():
             if not self.start_event.is_set():
                 time.sleep(1)
                 continue
-
+            # 获取图像
             frame = self.frame.copy()
+            # 检查选择滤镜
             if self.filere[0] != 0:
                 #print(self.filere[0])
                 frame = self.handle.cv2_to_pillow(frame)
                 frame = self.handle.add_content_to_image(frame, self.filere_images[self.filere[0]-1], self.position, self.size)
                 frame = self.handle.pillow_to_cv2(frame)
+            # 将图像放入队列
             if self.frame_queue.full():
                 self.frame_queue.get()
             self.frame_queue.put(frame)
             time.sleep(0.01)
-
         print("potho进程已停止")
 
 def potho_main(q, start_event, stop_event, filere, name, shape):
@@ -74,6 +80,7 @@ def potho_main(q, start_event, stop_event, filere, name, shape):
     photo.start()
 
 if __name__ == "__main__":
+    # 用例
     q = Queue(maxsize=5)
 
     start_event = Event()

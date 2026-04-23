@@ -48,21 +48,22 @@ class Robot:
         self.text_to_speech = TextToSpeech()                         # 加载文本转换语音类
         print("=" * 20, "文本转语音模块始化成功！", "=" * 20)
 
-        self.camera = camera_shared_memory()
-        self.camera.start_camera()
+        self.camera = camera_shared_memory() # 加载摄像头类
+        self.camera.start_camera() # 启动摄像头
 
-        self.camera_shm_name = self.camera.shm.name
-        self.camera_shape = self.camera.shape
+        self.camera_shm_name = self.camera.shm.name # 获取共享内存名称
+        self.camera_shape = self.camera.shape # 获取摄像头分辨率
 
-        self.using_camera = 0
+        self.using_camera = 0 # 使用摄像头模块数量
 
         self.processed_fire_frame_queue = Queue(maxsize=5) #处理后的帧
 
         self.fire_stop_event = Event() #关闭进程
         self.fire_start_event = Event() #开启检测
         self.fire_event = Event() #检测到火焰
-        self.fire_status = "no_fire"
+        self.fire_status = "no_fire"# 火焰状态
         self.fire_debounce_time = 5 #火焰检测防抖时间
+        # 加载火焰检测进程
         self.fire_process = Process(
             target=fire_main,
               args=(
@@ -72,7 +73,8 @@ class Robot:
                 self.fire_event,
                 self.camera_shm_name,
                 self.camera_shape))
-        self.fire_process.start()
+        
+        self.fire_process.start()# 启动火焰检测进程
         print("=" * 20, "火焰检测模块始化成功！", "=" * 20)
 
         print("#" * 20, "机器人初始化成功！", "#" * 20)
@@ -87,11 +89,11 @@ class Robot:
         self.volume = 0.5  # 音量，范围为-99到0         0最大      #pyttsx3   0.0~1.0
         self.location = "红门"
 
-        self.photo_start_event = Event()
-        self.photo_stop_event = Event()
-        self.photo_filere = Array("i", [0])
-        self.photo_frame_queue = Queue(maxsize=5)
-
+        self.photo_start_event = Event() # 开启拍照进程
+        self.photo_stop_event = Event() # 关闭拍照进程
+        self.photo_filere = Array("i", [0]) # 滤镜编号
+        self.photo_frame_queue = Queue(maxsize=5) # 拍照队列
+        # 加载拍照进程
         self.photo_module = potho_main(
             self.photo_frame_queue,
             self.photo_start_event,

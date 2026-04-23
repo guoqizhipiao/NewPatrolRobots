@@ -16,22 +16,22 @@ from camera.camera2 import camera_shared_memory
 
 class fire_detection():
     def __init__(self, frame_queue, start_event, stop_event, fire_event, name, shape):
-        self.frame_queue = frame_queue
-        self.start_event = start_event
-        self.stop_event = stop_event
-        self.fire_event = fire_event
+        self.frame_queue = frame_queue # 图像队列
+        self.start_event = start_event # 启动事件
+        self.stop_event = stop_event  # 停止事件
+        self.fire_event = fire_event  # 火灾事件
 
-        self.name = name
-        self.shape = shape
-        self.shm = shared_memory.SharedMemory(name=self.name)
-        self.frame = np.ndarray(self.shape, dtype=np.uint8, buffer=self.shm.buf)
-
+        self.name = name # 共享内存名称
+        self.shape = shape # 共享内存形状
+        self.shm = shared_memory.SharedMemory(name=self.name) # 创建共享内存对象
+        self.frame = np.ndarray(self.shape, dtype=np.uint8, buffer=self.shm.buf) # 创建numpy数组对象，用于访问共享内存
+        # 加载初始化测试图像
         self.curr_dir = os.path.dirname(__file__)
         self.model_path = os.path.join(self.curr_dir, 'best26.pt')
         self.init_image_path = os.path.join(self.curr_dir, 'init_image.jpg')
         parent_dir = os.path.dirname(self.curr_dir)
         sys.path.insert(0, parent_dir)
-
+        # 加载YOLO模型 初始化检测
         self.model = YOLO(self.model_path)
         self.model.to('cuda')
         self.model.fuse()
@@ -41,21 +41,18 @@ class fire_detection():
         if results:
             print("模型加载成功", self.model_path)
 
-        self.detection_interval = 2
-        self.last_detection_time = 0
-        self.testsnumber = 100
+        self.inference_size = 320 # 模型输入尺寸
 
-        self.inference_size = 320
+        self.detect_every = 6 # 每隔多少帧进行一次检测
+        self.frame_id = 0 # 当前帧ID
 
-        self.detect_every = 6
-        self.frame_id = 0
-
-        self.window_time = 5
-        self.window_start = time.time()
-        self.fire_count = 0
-        self.detect_count = 0
+        self.window_time = 5 # 窗口时间
+        self.window_start = time.time() # 窗口开始时间
+        self.fire_count = 0 # 火灾计数
+        self.detect_count = 0 # 检测计数
 
     def frame_detection(self, frame):
+        # 检测函数
         is_fire = False
         frame = cv2.resize(frame, (self.inference_size, int(self.inference_size * 0.75)))
         results = self.model(frame, verbose=False, stream=True)
@@ -83,45 +80,54 @@ class fire_detection():
         return (frame, is_fire)
 
     def run(self):
+        # 主循环
         print("""火焰检模块启动！""")
 
         while not self.stop_event.is_set():
             if self.start_event.is_set():
+                # 添加图像id
                 self.frame_id += 1
-
+                # 获取图像
                 frame = self.frame.copy()
-
-
+                # 每 detect_every 帧进行一次检测
                 if self.frame_id % self.detect_every == 0:
                     #print("检测中...")
                     is_fire = False
+                    # 检测
                     frame, is_fire = self.frame_detection(frame)
+                    # 更新计数
                     self.detect_count += 1
                     if is_fire:
+                        # 更新火焰计数
                         self.fire_count += 1
+                # 更新窗口
                 if time.time() - self.window_start > self.window_time:
+                    # 计算火焰比例
                     ratio = self.fire_count / max(self.detect_count, 1)
                     if ratio > 0.4:
                         print(f"检测到疑似火焰的次数: {self.fire_count} / {self.detect_count}")
                         self.fire_event.set()
                     else:
                         self.fire_event.clear()
-
+                    # 重置计数
                     self.fire_count = 0
                     self.detect_count = 0
+                    # 重置窗口
                     self.window_start = time.time()
-
+                # 将图像放入队列
                 if self.frame_queue.full():
                     self.frame_queue.get()
                 self.frame_queue.put(frame)
+                time.sleep(0.01)
             else:
                 #print("等待")
-                time.sleep(0.1)
-            time.sleep(0.05)
-
+                time.sleep(1)
         print("""火焰检测已关闭！""")
 
 def fire_main(frame_queue, start_event, stop_event, fire_event, name, shape):
+    """
+    启动子线程火焰检测模块
+    """
     detector = fire_detection(frame_queue, start_event, stop_event, fire_event, name, shape)
     detector.run()
 
