@@ -29,8 +29,8 @@ class potho():
         self.stop_event = stop_event
         # 加载滤镜
         self.filere = filere
-        curr_dir = os.path.dirname(__file__)
-        self.filere_dir = os.path.join(curr_dir, "filereimage")
+        # 滤镜目录
+        self.filere_dir = os.path.join(parent_dir, "static", "filters")
         self.filere_images = []
         self.load_filere()
         # 图像转换类

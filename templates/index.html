@@ -251,15 +251,21 @@
             gap: 16px;
         }
         .filter-item {
-            height: 70px;
+            height: 140px;
             border: 2px solid #000;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
             background: white;
             cursor: pointer;
             transition: background 0.2s;
+            overflow: hidden;
+        }
+        .filter-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         /* 滤镜选中样式 */
         .filter-item.active {
@@ -405,9 +411,15 @@
     <div class="camera-layout">
         <!-- 滤镜列表 -->
         <div class="filter-list">
-            <div class="filter-item" data-filter-id="1">滤镜1</div>
-            <div class="filter-item" data-filter-id="2">滤镜2</div>
-            <div class="filter-item" data-filter-id="3">滤镜3</div>
+            <div class="filter-item" data-filter-id="1">
+                <img src="{{ url_for('static', filename='filters/1.png')}}">
+            </div>
+            <div class="filter-item" data-filter-id="2">
+                <img src="{{ url_for('static', filename='filters/2.png')}}">
+            </div>
+            <div class="filter-item" data-filter-id="3">
+                <img src="{{ url_for('static', filename='filters/3.png')}}">
+            </div>
         </div>
 
         <!-- 相机预览区 -->
@@ -830,6 +842,7 @@
             if (num <= 0) {
                 clearInterval(timer);
                 countdown.style.display = 'none';
+                takePhotoAndDownload();
                 // 显示拍照成功提示
                 cameraTip.style.display = 'block';
                 // 2秒后自动隐藏提示
@@ -843,14 +856,48 @@
     }
     );
 
-    async function downloadImage() {
+    function takePhotoAndDownload() {
+
+        const img = document.getElementById('VideoPhoto');
+        
+        if (!img.complete) {
+            alert("视频帧尚未加载");
+            return;
+        }
+
+        // 创建隐藏 canvas
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+
+        // 把 video 当前帧画到 canvas
+        ctx.drawImage(img, 0, 0);
+
+        // 转成图片
+        canvas.toBlob((blob) => {
+
+            const url = URL.createObjectURL(blob);
+
+            downloadImage(url);
+
+            // 释放内存
+            URL.revokeObjectURL(url);
+
+        }, 'image/jpeg');
+    }
+
+    function downloadImage(url) {
+
         const link = document.createElement('a');
-        time = new Date().getTime();
-        link.href = targetImageSrc;
-        link.download = time + 'image.jpg'; // 指定下载后的文件名
+
+        link.href = url;
+        link.download = `${Date.now()}_photo.jpg`;
+
         document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
+        link.remove();
     }
 
 </script>
