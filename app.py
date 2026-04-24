@@ -189,6 +189,18 @@ def update_filter():
     robot.update_filter(filter_id)
     return jsonify({'status': 'success'})
 
+@app.route('/start_passerby_remove', methods=['POST'])
+def start_passerby_remove():
+    print("启动路人消除")
+    robot.start_passerby_remove()
+    return jsonify({'status': 'success'})
+
+@app.route('/stop_passerby_remove', methods=['POST'])
+def stop_passerby_remove():
+    print("关闭路人消除")
+    robot.stop_passerby_remove()
+    return jsonify({'status': 'success'})
+
 def cleanup_function():
     print("\n正在执行清理任务...")
     robot.stop_camera()

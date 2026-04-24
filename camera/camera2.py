@@ -4,6 +4,8 @@ import cv2
 from multiprocessing import Event, Process
 import time
 
+cap_number = 1
+
 def process_camera(start_event, shm_name, frame_event, shape, fps):
     """子进程，负责从摄像头读取图像，并写入共享内存
         start_event: 控制摄像头开始/停止捕获的信号
@@ -19,7 +21,7 @@ def process_camera(start_event, shm_name, frame_event, shape, fps):
     frame_buffer = np.ndarray(shape, dtype=np.uint8, buffer=shm.buf)
 
     # 初始化视频捕获对象，使用默认摄像头（索引0）
-    cap = cv2.VideoCapture(0)
+    cap = cv2.VideoCapture(cap_number)
     # 设置视频捕获的宽度
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, shape[1])
     # 设置视频捕获的高度

@@ -379,7 +379,7 @@
     <!-- 火灾识别开关  -->
     <div class="toggle-item">
         火灾识别
-        <div class="toggle-switch" id="fireToggle"></div> <!-- 开关在这里！ -->
+        <div class="toggle-switch" id="fireToggle"></div> 
     </div>
 
     <div class="video-fire">
@@ -428,6 +428,10 @@
             <div>视频区域</div>
             <img id="VideoPhoto" data-src="/video_photo" src="" alt="等待视频流..." style="max-width: 100%; max-height: 100%;">
             <div class="camera-button" id="cameraBtn">拍照</div>
+                <div class="toggle-item">
+                    路人消除
+                <div class="toggle-switch" id="PasserbyRemoveToggle"></div> 
+            </div>
             <div class="countdown" id="countdown"></div>
         </div>
     </div>
@@ -761,6 +765,48 @@
     let last_filter = null;
     // 状态变量
     let isPhoto = false;
+
+    PasserbyRemoveToggle = document.getElementById('PasserbyRemoveToggle');
+
+    PasserbyRemoveToggle.addEventListener('click', () => {
+        if (PasserbyRemoveToggle.classList.contains('active')) {
+            PasserbyRemoveToggle.classList.remove('active');
+            stoppasserbyremove();
+            console.log("路人消除已关闭");
+        } else {
+            PasserbyRemoveToggle.classList.add('active');
+            startpasserbyremove();
+            console.log("路人消除已开启");
+        }
+    })
+
+    async function startpasserbyremove() {
+        try {
+                const response = await fetch ('/start_passerby_remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    async function stoppasserbyremove() {
+        try {
+                const response = await fetch ('/stop_passerby_remove', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    // 点击拍照按钮
 
     // 开始拍照
     async function StartPhoto() {

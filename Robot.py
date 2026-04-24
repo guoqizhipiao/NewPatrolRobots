@@ -10,7 +10,7 @@ from LLM.DeepSeek import DeepSeek
 from TextToSpeech.TextToSpeech_v6 import TextToSpeech
 from LLM.CheckStartOllama import check_start_ollama
 from firealarm.firemain4 import fire_main
-from photomodule.photomain2 import potho_main
+from photomodule.photomain2 import photo_main
 from camera.camera2 import camera_shared_memory
 
 
@@ -93,12 +93,14 @@ class Robot:
         self.photo_stop_event = Event() # 关闭拍照进程
         self.photo_filere = Array("i", [0]) # 滤镜编号
         self.photo_frame_queue = Queue(maxsize=5) # 拍照队列
+        self.passerby_remove = Event() # 路人消除状态
         # 加载拍照进程
-        self.photo_module = potho_main(
+        self.photo_module = photo_main(
             self.photo_frame_queue,
             self.photo_start_event,
             self.photo_stop_event,
             self.photo_filere,
+            self.passerby_remove,
             self.camera_shm_name,
             self.camera_shape)
         self.photo_status = False
@@ -284,6 +286,12 @@ class Robot:
         self.fire_start_event.clear()
     def update_filter(self, filter_id):
         self.photo_filere[0] = int(filter_id)
+
+    def start_passerby_remove(self):
+        self.passerby_remove.set()
+
+    def stop_passerby_remove(self):
+        self.passerby_remove.clear()
 
 
 if __name__ == "__main__":

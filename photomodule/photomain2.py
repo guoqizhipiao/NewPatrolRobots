@@ -12,9 +12,10 @@ sys.path.insert(0, parent_dir)
 
 from camera.camera2 import camera_shared_memory
 from photomodule.framehandle import frame_handle
+from photomodule.passerbyremove import people_remover
 
-class potho():
-    def __init__(self, frame_queue, start_event, stop_event, filere, name, shape):
+class photo():
+    def __init__(self, frame_queue, start_event, stop_event, filere, passerby_remove, name, shape):
         # 共享内存
         self.name = name
         # 图像形状
@@ -38,6 +39,9 @@ class potho():
         # 滤镜位置大小
         self.position = (0,0)
         self.size = 1
+        #加载路人消除模块
+        self.people_remover_model = people_remover()
+        self.passerby_remove = passerby_remove
         #启动循环
         self.run()
 
@@ -68,16 +72,19 @@ class potho():
                 frame = self.handle.cv2_to_pillow(frame)
                 frame = self.handle.add_content_to_image(frame, self.filere_images[self.filere[0]-1], self.position, self.size)
                 frame = self.handle.pillow_to_cv2(frame)
+            # 检查路人消除
+            if self.passerby_remove.is_set():
+                frame = self.people_remover_model.remove_people(frame)
             # 将图像放入队列
             if self.frame_queue.full():
                 self.frame_queue.get()
             self.frame_queue.put(frame)
             time.sleep(0.01)
-        print("potho进程已停止")
+        print("photo进程已停止")
 
-def potho_main(q, start_event, stop_event, filere, name, shape):
-    photo = Process(target=potho, args=(q, start_event, stop_event, filere, name, shape))
-    photo.start()
+def photo_main(q, start_event, stop_event, filere, passerby_remove, name, shape):
+    photo_process = Process(target=photo, args=(q, start_event, stop_event, filere, passerby_remove, name, shape))
+    photo_process.start()
 
 if __name__ == "__main__":
     # 用例
@@ -91,7 +98,7 @@ if __name__ == "__main__":
     camera.start_camera()
     camera.start_event.set()
     print(1)
-    potho_main(q, start_event, stop_event, filere, camera.shm.name, camera.shape)
+    photo_main(q, start_event, stop_event, filere, camera.shm.name, camera.shape)
     print(2)
     start_event.set()
     print(3)
