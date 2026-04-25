@@ -18,7 +18,6 @@
         body, html {
             height: 100%;
             overflow: hidden;
-            background-color: #f5f7fa;
         }
 
 
@@ -26,8 +25,7 @@
         .top-tabs {
             display: flex;
             height: 60px;
-            border-bottom: 2px solid #e5e7eb;
-            background-color: #ffffff;
+            border-bottom: 2px solid #000;
         }
 
         /* 单个 tab 样式：平分宽度、居中、粗体 */
@@ -38,23 +36,16 @@
             justify-content: center;
             font-size: 22px;
             font-weight: bold;
-            border-right: 2px solid #e5e7eb;
+            border-right: 2px solid #000;
             cursor: pointer;
-            background: #f3f4f6;
-            /* 鼠标悬浮反馈 */
-            transition: background 0.25s ease, color 0.25s ease;
-        }
-        .tab:hover {
-            background-color: #e9ecef;
-            color: #1a73e8;
+            background: #f0f0f0;
         }
         .tab:last-child {
             border-right: none;
         }
-        /* 选中的 tab 变白+主题蓝文字 */
+        /* 选中的 tab 变白 */
         .tab.active {
             background: #fff;
-            color: #1a73e8;
         }
 
         /* ==================== 页面内容区域 ==================== */
@@ -69,23 +60,12 @@
             display: block;
         }
 
-        /* 通用白色卡片容器 - 统一三页风格（和聊天页一致） */
-        .card-wrap {
-            width: 100%;
-            height: 100%;
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
-            padding: 24px;
-        }
-
-        /* ==================== 第0页：设置页样式 美化升级 ==================== */
+        /* ==================== 第0页：设置页样式 ==================== */
         .settings-title {
             font-size: 26px;
             font-weight: bold;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             text-align: center;
-            color: #1f2937;
         }
 
         /* 火灾识别那一行的布局 */
@@ -95,94 +75,74 @@
             align-items: center;
             font-size: 22px;
             font-weight: bold;
-            border: none;
-            background-color: #f9fafb;
-            border-radius: 12px;
-            padding: 14px 20px;
-            margin-bottom: 24px;
-            transition: background 0.25s ease;
-        }
-        .toggle-item:hover {
-            background-color: #f3f4f6;
+            border: 2px solid #000;
+            padding: 12px 16px;
+            margin-bottom: 20px;
         }
 
         /* 火灾识别开关样式（就是你之前问的 fireToggle） */
         .toggle-switch {
             width: 50px;
             height: 28px;
+            border: 2px solid #000;
             border-radius: 14px;
             position: relative;
-            background: #d1d5db;
-            cursor: pointer;
-            transition: background 0.3s ease;
+            background: white;
         }
         .toggle-switch::after {
             content: "";
             position: absolute;
             width: 22px;
             height: 22px;
-            background: #ffffff;
+            background: #000;
             border-radius: 50%;
-            top: 3px;
-            left: 3px;
-            transition: 0.25s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            top: 2px;
+            left: 2px;
+            transition: 0.2s;
         }
-        /* 开关打开时：主题蓝色+圆点右移 */
-        .toggle-switch.active {
-            background-color: #1a73e8;
-        }
+        /* 开关打开时小圆点右移 */
         .toggle-switch.active::after {
-            left: 25px;
+            left: 24px;
         }
 
-        /* 视频显示框 - 放大、去留白、圆角美化 */
+        /* 视频显示框 */
         .video-fire {
-            width: 100%;
-            height: calc(100% - 140px);
-            border-radius: 12px;
-            background: #111111;
+            border: 2px solid #000;
+            height: 380px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            color: #9ca3af;
-            overflow: hidden;
+            color: #666;
         }
-        .video-fire img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
         /* 全屏报警弹窗样式*/
         #alarm-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(220, 38, 38, 0.88);
+            background-color: rgba(255, 0, 0, 0.85);
             z-index: 9999;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             color: white;
         }
-
+        
         /* 警报文字动画 */
-        #alarm-overlay h1 {
-            font-size: 5rem;
-            margin: 0;
-            animation: blink 1s infinite;
+        #alarm-overlay h1 { 
+            font-size: 5rem; 
+            margin: 0; 
+            animation: blink 1s infinite; 
             }
         @keyframes blink {
             0% { opacity: 1; }
             50% { opacity: 0.5; }
             100% { opacity: 1; }
         }
-        /* 关闭按钮 - 配色+hover+按压反馈 */
+        /* 关闭按钮 */
         #alarm-overlay .close-btn {
-            background-color: #ffffff;
-            color: #dc2626;
+            background-color: white;
+            color: #ff4d4d;
             border: 3px solid white;
             padding: 15px 40px;
             font-size: 1.8rem;
@@ -194,7 +154,7 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         #alarm-overlay .close-btn:hover {
-            background-color: #fee2e2;
+            background-color: #ffebeb;
             transform: scale(1.05);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
@@ -202,16 +162,17 @@
             transform: scale(0.95);
         }
 
-        /* ==================== 第1页：聊天界面样式（保留原版+微调美化） ==================== */
+        /* ==================== 第1页：聊天界面样式 ==================== */
         .chat-container {
             width: 100%;
-            height: 100%;
-            border-radius: 16px;
+            max-width: 900px;
+            margin: 0 auto;
+            border: 2px solid #000;
+            border-radius: 12px;
             overflow: hidden;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.06);
-            background: #fff;
         }
 
         /* 聊天顶部蓝色标题栏 */
@@ -229,7 +190,7 @@
             flex: 1;
             padding: 20px;
             overflow-y: auto;
-            background: #f9fafb;
+            background: #f9f9f9;
         }
 
         /* 消息气泡通用样式 */
@@ -247,7 +208,7 @@
         /* 机器人消息：白色，靠左 */
         .msg.bot {
             background: #fff;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #ccc;
         }
 
         /* 底部输入框栏 */
@@ -256,90 +217,50 @@
             padding: 12px;
             gap: 10px;
             background: white;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #ccc;
         }
         .chat-input input {
             flex: 1;
             padding: 10px 14px;
-            border: 2px solid #e5e7eb;
+            border: 2px solid #ccc;
             border-radius: 24px;
             font-size: 16px;
-            transition: border 0.25s ease;
-            outline: none;
         }
-        .chat-input input:focus {
-            border-color: #1a73e8;
-        }
-        /* 语音、发送按钮 配色+反馈 */
         .chat-input button {
             padding: 10px 18px;
             border: none;
             border-radius: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-        #voiceBtn {
-            background-color: #10b981;
-            color: #fff;
-        }
-        #voiceBtn:hover {
-            background-color: #059669;
-        }
-        #voiceBtn:active {
-            transform: scale(0.95);
-        }
-        #sendBtn {
             background: #1a73e8;
             color: white;
-        }
-        #sendBtn:hover {
-            background-color: #1557b0;
-        }
-        #sendBtn:active {
-            transform: scale(0.95);
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        /* ==================== 第2页：拍照页面样式 最终优化版 ==================== */
+        /* ==================== 第2页：拍照页面样式 ==================== */
         .camera-layout {
             display: flex;
-            gap: 24px;
+            gap: 20px;
             height: 100%;
         }
 
-        /* 左侧滤镜列表 新增分类文字引导 */
+        /* 左侧滤镜列表 */
         .filter-list {
-            width: 190px;
+            width: 180px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            flex-shrink: 0;
-            padding-top: 10px;
-        }
-        /* 滤镜分类文字标签 */
-        .filter-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: #374151;
-            text-align: center;
-            margin-bottom: 4px;
+            gap: 16px;
         }
         .filter-item {
             height: 140px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
+            border: 2px solid #000;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: white;
             cursor: pointer;
-            transition: all 0.25s ease;
+            transition: background 0.2s;
             overflow: hidden;
-        }
-        .filter-item:hover {
-            border-color: #1a73e8;
-            transform: translateY(-2px);
         }
         .filter-item img {
             width: 100%;
@@ -349,72 +270,42 @@
         /* 滤镜选中样式 */
         .filter-item.active {
             background: #d3eafd;
-            border-color: #1a73e8;
         }
 
         /* 右侧相机预览区 */
         .camera-preview {
             flex: 1;
-            border: none;
-            border-radius: 16px;
-            background: #fff;
-            box-shadow: 0 3px 15px rgba(0,0,0,0.06);
+            border: 2px solid #000;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
-            height: 100%;
-        }
-        /* 视频区域固定尺寸，杜绝拍照前后大小变化 */
-        .video-wrap {
-            width: 100%;
-            height: 75%;
-            border-radius: 12px;
-            background: #111;
-            overflow: hidden;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
             justify-content: center;
-        }
-        .video-wrap img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+            gap: 20px;
+            font-size: 24px;
+            position: relative;
         }
 
-        /* 底部操作栏：横向拍照+倒计时同行 */
-        .camera-bottom-bar {
-            display: flex;
-            align-items: center;
-            gap: 30px;
-        }
-
-        /* 圆形拍照按钮 - 主题色+hover+按压反馈 */
+        /* 圆形拍照按钮 */
         .camera-button {
             width: 80px;
             height: 80px;
-            border: none;
+            border: 2px solid #000;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
-            background: #1a73e8;
-            color: #fff;
+            background: white;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+            transition: transform 0.1s, background 0.2s;
         }
-        .camera-button:hover {
-            background-color: #1557b0;
-            box-shadow: 0 6px 16px rgba(26, 115, 232, 0.4);
-        }
+        /* 拍照按钮按下效果 */
         .camera-button:active {
-            transform: scale(0.92);
-            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+            transform: scale(0.95);
+            background: #f0f0f0;
         }
 
+        /* 拍照成功提示 */
         .camera-tip {
             position: absolute;
             top: 20px;
@@ -425,17 +316,13 @@
             font-size: 18px;
             display: none;
         }
+
+        /* 倒计时样式 */
         .countdown {
-            font-size: 52px;
+            font-size: 48px;
             font-weight: bold;
             color: #ff4444;
             display: none;
-            line-height: 1;
-        }
-
-        /* 路人消除开关居中 */
-        .toggle-row {
-            margin-top: 16px;
         }
 
         /* ==================== 录音提示弹窗（备用样式） ==================== */
@@ -462,13 +349,6 @@
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            transition: 0.2s ease;
-        }
-        .record-toast .cancel-btn:hover {
-            background: #dc2626;
-        }
-        .record-toast .cancel-btn:active {
-            transform: scale(0.95);
         }
     </style>
 </head>
@@ -485,34 +365,39 @@
     <div class="tab" onclick="switchPage(2)">拍照</div>
 </div>
 
-<!-- 火灾报警弹窗 -->
+<!-- 报警弹窗 DOM -->
 <div id="alarm-overlay">
     <h1>⚠️ 火灾警报 ⚠️</h1>
     <p>检测到火焰，请立即处理！</p>
     <button class="close-btn" onclick="closeAlarmOverlay()">关闭</button>
 </div>
 
-<!-- ==================== 设置页面 优化后 ==================== -->
+<!-- ==================== 第0页：设置页面 ==================== -->
 <div class="page active" id="page0">
-    <div class="card-wrap">
-        <div class="settings-title">设置</div>
-        <div class="toggle-item">
-            火灾识别
-            <div class="toggle-switch" id="fireToggle"></div>
-        </div>
-        <div class="video-fire">
-            <img id ="videoFire" src="" data-src="/video_fire" alt="等待视频流...">
-        </div>
+    <div class="settings-title">设置</div>
+
+    <!-- 火灾识别开关  -->
+    <div class="toggle-item">
+        火灾识别
+        <div class="toggle-switch" id="fireToggle"></div> 
+    </div>
+
+    <div class="video-fire">
+        <img id ="videoFire" src="" data-src="/video_fire" alt="等待视频流..." style="max-width: 100%; max-height: 100%;">
     </div>
 </div>
 
-<!-- ==================== 聊天助手页面 原版美观保留 ==================== -->
+<!-- ==================== 第1页：聊天助手页面 ==================== -->
 <div class="page" id="page1">
     <div class="chat-container">
         <div class="chat-header">景区安防向导机器人</div>
+
+        <!-- 聊天消息展示区 -->
         <div class="chat-area" id="chatArea">
             <div class="msg bot">您好！我是您的AI助手~</div>
         </div>
+
+        <!-- 聊天输入框区域 -->
         <div class="chat-input">
             <button id="voiceBtn">语音</button>
             <input id="chatInput" placeholder="请输入问题...">
@@ -521,12 +406,11 @@
     </div>
 </div>
 
-<!-- ==================== 拍照页面 新增滤镜分类文字引导 ==================== -->
+<!-- ==================== 第2页：拍照页面 ==================== -->
 <div class="page" id="page2">
-    <div class="card-wrap camera-layout">
+    <div class="camera-layout">
+        <!-- 滤镜列表 -->
         <div class="filter-list">
-            <!-- 滤镜分类文字 + 滤镜预览 -->
-            <div class="filter-label">节日限定</div>
             <div class="filter-item" data-filter-id="1">
                 <img src="{{ url_for('static', filename='filters/1.png')}}">
             </div>
@@ -536,32 +420,19 @@
             <div class="filter-item" data-filter-id="3">
                 <img src="{{ url_for('static', filename='filters/3.png')}}">
             </div>
-
-            <div class="filter-label">景区限定</div>
-
-
-            <div class="filter-label">日常简约</div>
-
         </div>
 
+        <!-- 相机预览区 -->
         <div class="camera-preview">
             <div class="camera-tip" id="cameraTip">📸 拍照成功！</div>
-
-            <!-- 视频区域 -->
-            <div class="video-wrap">
-                <div style="font-size:24px;font-weight:bold;margin-bottom:10px;">视频区域</div>
-                <img id="VideoPhoto" data-src="/video_photo" src="" alt="等待视频流...">
+            <div>视频区域</div>
+            <img id="VideoPhoto" data-src="/video_photo" src="" alt="等待视频流..." style="max-width: 100%; max-height: 100%;">
+            <div class="camera-button" id="cameraBtn">拍照</div>
+                <div class="toggle-item">
+                    路人消除
+                <div class="toggle-switch" id="PasserbyRemoveToggle"></div> 
             </div>
-
-            <!-- 底部拍照+倒计时+开关 -->
-            <div class="camera-bottom-bar">
-                <div class="camera-button" id="cameraBtn">拍照</div>
-                <div class="countdown" id="countdown"></div>
-            </div>
-            <div class="toggle-item toggle-row" style="width:auto;margin:16px 0 0;">
-                路人消除
-                <div class="toggle-switch" id="PasserbyRemoveToggle"></div>
-            </div>
+            <div class="countdown" id="countdown"></div>
         </div>
     </div>
 </div>
@@ -569,7 +440,7 @@
 <script>
     // ==================== 页面/标签页切换功能 ====================
     // 接收一个索引值 index，用于切换对应页面和标签
-
+    
 
 
     function switchPage(index) {
@@ -584,13 +455,14 @@
         document.querySelectorAll('.tab')[index].classList.add('active');
 
         if (index == 2) {
-            console.log("切换到拍照页面，启动视频流");
             const img = document.getElementById('VideoPhoto');
             if (img){
-                img.src = img.dataset.src;
-                if (!isPhoto){
-                    isPhoto = true;
-                    StartPhoto();
+                if(!img.scr){
+                    img.src = img.dataset.src;
+                    if (!isPhoto){
+                        isPhoto = true;
+                        StartPhoto();
+                    }
                 }
             }
         }else{
@@ -601,7 +473,6 @@
         }
 
         if (index == 0) {
-            console.log("切换到设置页面，启动视频流");
             const img = document.getElementById('videoFire');
             if (img){
                 img.src = img.dataset.src;
@@ -609,9 +480,13 @@
         }else{
             const img = document.getElementById('videoFire');
             if (img){
+                if(!img.scr){
                     img.src = "";
+                }
             }
         }
+
+
     }
 
 
@@ -679,7 +554,7 @@
             console.error(err);
         }
     }
-
+    
     // 建立 SSE 连接
     function FireStatusStream() {
         const eventSource = new EventSource('/fire_status_stream');
@@ -891,7 +766,7 @@
     // 状态变量
     let isPhoto = false;
 
-    const PasserbyRemoveToggle = document.getElementById('PasserbyRemoveToggle');
+    PasserbyRemoveToggle = document.getElementById('PasserbyRemoveToggle');
 
     PasserbyRemoveToggle.addEventListener('click', () => {
         if (PasserbyRemoveToggle.classList.contains('active')) {
@@ -1028,31 +903,44 @@
     );
 
     function takePhotoAndDownload() {
+
         const img = document.getElementById('VideoPhoto');
+        
         if (!img.complete) {
             alert("视频帧尚未加载");
             return;
         }
+
         // 创建隐藏 canvas
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
+
         canvas.width = img.naturalWidth;
         canvas.height = img.naturalHeight;
+
         // 把 video 当前帧画到 canvas
         ctx.drawImage(img, 0, 0);
+
         // 转成图片
         canvas.toBlob((blob) => {
+
             const url = URL.createObjectURL(blob);
+
             downloadImage(url);
+
             // 释放内存
             URL.revokeObjectURL(url);
+
         }, 'image/jpeg');
     }
 
     function downloadImage(url) {
+
         const link = document.createElement('a');
+
         link.href = url;
         link.download = `${Date.now()}_photo.jpg`;
+
         document.body.appendChild(link);
         link.click();
         link.remove();
