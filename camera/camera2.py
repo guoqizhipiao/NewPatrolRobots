@@ -4,7 +4,7 @@ import cv2
 from multiprocessing import Event, Process
 import time
 
-cap_number = 1
+cap_number = 0
 
 def process_camera(start_event, shm_name, frame_event, shape, fps):
     """子进程，负责从摄像头读取图像，并写入共享内存
