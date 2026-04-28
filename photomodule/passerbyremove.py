@@ -1,4 +1,3 @@
-from pyexpat import model
 from ultralytics import YOLO
 import cv2
 import numpy as np
@@ -41,7 +40,7 @@ class people_remover:
         if len(persons) == 0:
             return image
 
-        # ⭐ 保留最大的人（拍照主体）
+        #  保留最大的人（拍照主体）
         areas = [(x2-x1)*(y2-y1) for x1,y1,x2,y2 in persons]
         main_id = np.argmax(areas)
 
